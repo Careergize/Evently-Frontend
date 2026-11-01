@@ -2,8 +2,9 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Flower2, CheckCircle2, ArrowRight, Copy } from "lucide-react";
+import { CheckCircle2, ArrowRight, Copy } from "lucide-react";
 import { api, Field, fmtDate, type Data } from "./shared";
+import { VeyraMark } from "./brand";
 import { InvitationDesign } from "./invitation-design";
 import { Button } from "./ui/button";
 export function Invitation({ token }: { token: string }) {
@@ -65,7 +66,9 @@ export function Invitation({ token }: { token: string }) {
     return (
       <div className="invitation-page">
         <div className="invitation-paper">
-          <Flower2 size={40} style={{ margin: "auto" }} />
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <VeyraMark size={40} />
+          </div>
           {error ? (
             <>
               <h1>Something’s missing.</h1>
@@ -353,7 +356,7 @@ export function Invitation({ token }: { token: string }) {
                 style={{
                   fontSize: 10,
                   textAlign: "center",
-                  color: "#919b84",
+                  color: "var(--muted-text)",
                   lineHeight: 1.8,
                 }}
               >
@@ -372,11 +375,14 @@ export function Invitation({ token }: { token: string }) {
         style={{
           textAlign: "center",
           fontSize: 11,
-          color: "#8e9b7d",
+          color: "var(--muted-text)",
           marginTop: 25,
         }}
       >
-        Created with <Link href="/" className="invitation-attribution">Veyra</Link>
+        Created with{" "}
+        <Link href="/" className="invitation-attribution">
+          Veyra
+        </Link>
       </p>
     </div>
   );

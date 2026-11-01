@@ -38,7 +38,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "./ui/button";
-import { api, Field, Modal, Stat, fmtDate, type Data } from "./shared";
+import { api, Field, Modal, Art, Stat, fmtDate, type Data } from "./shared";
 function Shell({
   children,
   user,
@@ -94,7 +94,7 @@ function Shell({
             <p>Plan thoughtfully. Make every gathering count.</p>
             <Link
               href="/dashboard?view=insights"
-              style={{ fontSize: 10, color: "#6e855e" }}
+              style={{ fontSize: 10, color: "var(--muted-text)" }}
             >
               Explore your insights{" "}
               <ArrowRight size={11} style={{ display: "inline" }} />
@@ -150,7 +150,7 @@ function Shell({
           <div className="top-actions">
             <span
               className="top-date"
-              style={{ fontSize: 11, color: "#8b9585" }}
+              style={{ fontSize: 11, color: "var(--muted-text)" }}
             >
               {new Date().toLocaleDateString("en-IN", {
                 weekday: "short",
@@ -223,16 +223,18 @@ function EventCard({ event: e }: { event: Data }) {
             <small>Invited people</small>
           </div>
           <div>
-            <strong style={{ color: "#6c8e5d" }}>{a.confirmed}</strong>
+            <strong style={{ color: "var(--green)" }}>{a.confirmed}</strong>
             <small>Confirmed</small>
           </div>
           <div>
-            <strong style={{ color: "#bc9b59" }}>{a.pending}</strong>
+            <strong style={{ color: "var(--gold-text)" }}>{a.pending}</strong>
             <small>Awaiting reply</small>
           </div>
         </div>
         <div className="event-bottom">
-          <span style={{ color: "#91a085" }}>{a.completion}% responded</span>
+          <span style={{ color: "var(--muted-text)" }}>
+            {a.completion}% responded
+          </span>
           <div className="progress">
             <div style={{ width: `${a.completion}%` }} />
           </div>
@@ -476,7 +478,7 @@ function Dashboard({ user }: { user: Data }) {
                       Your events{" "}
                       <span
                         style={{
-                          color: "#9aa48d",
+                          color: "var(--muted-text)",
                           fontSize: 11,
                           fontWeight: 400,
                           marginLeft: 8,
@@ -537,7 +539,7 @@ function Dashboard({ user }: { user: Data }) {
                       justifyContent: "center",
                       gap: 8,
                       fontSize: 11,
-                      color: "#8b9b7d",
+                      color: "var(--muted-text)",
                     }}
                   >
                     <Plus size={14} />A new occasion to bring people together
@@ -564,7 +566,7 @@ function Dashboard({ user }: { user: Data }) {
                       paddingTop: 14,
                       marginBottom: 0,
                       fontSize: 10,
-                      color: "#9aa48d",
+                      color: "var(--muted-text)",
                     }}
                   >
                     Updates automatically every 15 seconds

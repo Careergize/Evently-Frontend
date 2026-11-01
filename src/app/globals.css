@@ -1,12 +1,16 @@
 @import "tailwindcss";
 :root {
-  --green: #174e40;
-  --gold: #b99558;
-  --ink: #263d35;
-  --muted: #7d8982;
-  --paper: #f8f9f5;
-  --border: #e5e9e1;
-  --serif: Georgia, "Times New Roman", serif;
+  --green: #163d34;
+  --gold: #c6a76b;
+  --gold-text: #80612e;
+  --ink: #252525;
+  --muted: #777777;
+  --muted-text: #656565;
+  --paper: #f8f5ef;
+  --surface: #ffffff;
+  --border: #e1e2dc;
+  --serif: var(--font-display), Georgia, "Times New Roman", serif;
+  --sans: var(--font-ui), Arial, sans-serif;
 }
 * {
   box-sizing: border-box;
@@ -18,7 +22,7 @@ body {
   margin: 0;
   color: var(--ink);
   background: var(--paper);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--sans);
   font-size: 14px;
 }
 a {
@@ -107,13 +111,13 @@ p {
 }
 small,
 .muted {
-  color: var(--muted);
+  color: var(--muted-text);
 }
 .eyebrow {
   text-transform: uppercase;
   letter-spacing: 2px;
   font-size: 10px;
-  color: var(--gold);
+  color: var(--gold-text);
   font-weight: 700;
 }
 .brand {
@@ -251,11 +255,11 @@ small,
 }
 .page-heading p {
   font-size: 12px;
-  color: var(--muted);
+  color: var(--muted-text);
   margin: 0;
 }
 .welcome-spark {
-  color: var(--gold);
+  color: var(--gold-text);
 }
 .stats {
   display: grid;
@@ -586,7 +590,7 @@ small,
 .empty p {
   max-width: 420px;
   margin: 10px auto 25px;
-  color: var(--muted);
+  color: var(--muted-text);
   font-size: 13px;
 }
 .loading {
@@ -990,7 +994,7 @@ td small {
   font-size: 40px;
 }
 .marketing-section > p {
-  color: var(--muted);
+  color: var(--muted-text);
   max-width: 590px;
   margin: 0 auto 35px;
 }
@@ -1016,7 +1020,7 @@ td small {
   font-weight: 400;
 }
 .feature p {
-  color: var(--muted);
+  color: var(--muted-text);
   font-size: 13px;
 }
 .feature .step-num {
@@ -1040,7 +1044,7 @@ td small {
 }
 .faq p {
   font-size: 13px;
-  color: var(--muted);
+  color: var(--muted-text);
 }
 .marketing-footer {
   max-width: 1140px;
@@ -1692,4 +1696,878 @@ td small {
 }
 .side-link {
   min-height: 44px;
+}
+
+/* Veyra identity: interface typography stays functional; display type belongs to moments. */
+.brand {
+  gap: 5px;
+  color: var(--green);
+  flex-shrink: 0;
+  text-decoration: none;
+  line-height: 1;
+}
+.brand svg {
+  flex-shrink: 0;
+}
+.brand-wordmark {
+  font-family: var(--serif);
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: -1.3px;
+}
+.app h1,
+.app h2,
+.app .serif {
+  font-family: var(--sans);
+  font-weight: 550;
+  letter-spacing: -0.035em;
+}
+.app h1 {
+  font-size: clamp(25px, 3vw, 32px);
+}
+.app h2 {
+  font-size: 21px;
+}
+.app .brand-wordmark {
+  font-family: var(--serif);
+}
+.panel {
+  border-color: var(--border);
+  box-shadow: 0 3px 15px #163d3403;
+}
+.stat {
+  background: var(--surface);
+  border-color: var(--border);
+}
+.stat-value {
+  color: var(--green);
+  font-family: var(--sans);
+  letter-spacing: -0.04em;
+}
+.stat-top,
+.field label,
+.topbar,
+.side-link {
+  color: #515d56;
+}
+.badge {
+  color: #355d48;
+  background: #edf3ed;
+}
+.badge.draft {
+  color: #765d2d;
+  background: #f5f0e5;
+}
+.notice {
+  color: #566154;
+  background: #f1f3ec;
+}
+.icon-button {
+  color: #526052;
+}
+.button {
+  min-height: 44px;
+  border-radius: 7px;
+  transition:
+    background 0.2s,
+    box-shadow 0.2s;
+}
+.primary:hover {
+  background: #215548;
+  box-shadow: 0 4px 14px #163d341c;
+  transform: none;
+}
+.btn-outline:hover {
+  background: var(--paper);
+  transform: none;
+}
+.button:focus-visible,
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+}
+.auth-story {
+  background: var(--green);
+  color: var(--paper);
+}
+.auth-story .brand {
+  color: var(--paper);
+}
+.auth-story h1 {
+  color: var(--paper);
+  font-family: var(--serif);
+}
+.auth-story p,
+.auth-story small {
+  color: #d3ded6;
+}
+.auth-story:after {
+  content: "V";
+  font-family: var(--serif);
+  font-size: 650px;
+  color: #c6a76b12;
+  transform: none;
+  right: -80px;
+  bottom: -160px;
+  pointer-events: none;
+}
+.auth-story .eyebrow {
+  color: #dac69b;
+}
+.auth-form .legal {
+  color: var(--muted-text);
+}
+.loading {
+  width: 42px;
+  height: 44px;
+  border: 0;
+  border-radius: 0;
+  background: url("/brand/veyra-mark.svg") center/contain no-repeat;
+  animation: veyra-breathe 1.6s ease-in-out infinite;
+}
+@keyframes veyra-breathe {
+  50% {
+    opacity: 0.35;
+    transform: translateY(-3px);
+  }
+}
+.invitation-attribution {
+  font-family: var(--serif);
+  font-size: 17px;
+  color: var(--green);
+}
+.veyra-landing {
+  background: var(--paper);
+  color: var(--ink);
+}
+.veyra-nav {
+  max-width: 1280px;
+  padding: 27px 40px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+}
+.veyra-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  font-size: 12px;
+}
+.veyra-nav-links > a:not(.button) {
+  color: #515d56;
+}
+.veyra-hero {
+  max-width: 1280px;
+  margin: auto;
+  padding: 76px 40px 100px;
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  align-items: center;
+  gap: 70px;
+}
+.veyra-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.17em;
+  font-weight: 600;
+  color: #677165;
+}
+.veyra-kicker > span {
+  height: 5px;
+  width: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+.veyra-hero h1 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(48px, 5.7vw, 80px);
+  letter-spacing: -0.055em;
+  line-height: 1.12;
+  color: var(--green);
+  margin: 25px 0;
+}
+.veyra-hero h1 em {
+  font-style: italic;
+}
+.veyra-hero-copy > p {
+  max-width: 420px;
+  font-size: 15px;
+  line-height: 1.9;
+  color: #626962;
+}
+.veyra-actions {
+  display: flex;
+  gap: 27px;
+  align-items: center;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+.veyra-text-link {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--green);
+}
+.veyra-hero-copy .veyra-hero-note {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 11px;
+  margin-top: 24px;
+}
+.veyra-product-preview {
+  background: white;
+  border: 1px solid #d8ded5;
+  border-radius: 15px;
+  box-shadow: 0 30px 70px #163d3412;
+  padding: 0 0 15px;
+  overflow: hidden;
+  transform: rotate(1deg);
+  position: relative;
+}
+.preview-window-bar {
+  padding: 17px 23px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  gap: 14px;
+}
+.preview-window-bar .brand-wordmark {
+  font-size: 22px;
+}
+.preview-window-bar .brand svg {
+  height: 28px;
+  width: 28px;
+}
+.preview-window-bar > span {
+  color: #626d64;
+  font-size: 8px;
+  letter-spacing: 0.15em;
+}
+.preview-window-dot {
+  width: 6px;
+  height: 6px;
+  background: #b5c2af;
+  border-radius: 50%;
+}
+.preview-dark {
+  margin: 18px;
+  border-radius: 9px;
+  padding: 25px 28px;
+  background: var(--green);
+  color: var(--paper);
+}
+.preview-dark .veyra-kicker {
+  color: #d9c79f;
+  font-size: 8px;
+}
+.preview-dark h2 {
+  color: var(--paper);
+  font-family: var(--serif);
+  font-size: clamp(26px, 3vw, 35px);
+  margin: 13px 0 4px;
+}
+.preview-dark p {
+  color: #d2dfd7;
+  font-size: 10px;
+  margin: 4px 0 20px;
+}
+.preview-date {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 9px;
+}
+.preview-pill {
+  margin-left: auto;
+  background: #ffffff16;
+  padding: 6px 9px;
+  border: 1px solid #ffffff25;
+  border-radius: 4px;
+}
+.preview-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0 19px;
+}
+.preview-metrics > div {
+  padding: 7px 12px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.preview-metrics strong {
+  display: block;
+  color: var(--green);
+  font-size: 29px;
+  letter-spacing: -0.05em;
+  font-weight: 500;
+}
+.preview-metrics span {
+  font-size: 8px;
+  color: #626962;
+}
+.preview-response {
+  padding: 20px 23px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 10px;
+}
+.preview-avatar {
+  width: 32px;
+  height: 32px;
+  background: #eceee6;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--green);
+  font-size: 9px;
+  flex-shrink: 0;
+}
+.preview-response strong,
+.preview-food strong {
+  font-size: 10px;
+  font-weight: 600;
+}
+.preview-response div > span,
+.preview-food div > span {
+  display: block;
+  color: #636d64;
+  font-size: 8px;
+  margin-top: 4px;
+}
+.preview-confirmed {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  color: #355d48;
+  background: #edf3ed;
+  padding: 5px 7px;
+  border-radius: 4px;
+  font-size: 8px;
+}
+.preview-food {
+  margin: 0 19px;
+  background: #f5f5ed;
+  border: 1px solid #e7e9dc;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 15px;
+  color: var(--green);
+}
+.preview-food > svg:last-child {
+  margin-left: auto;
+}
+.preview-caption {
+  font-size: 8px;
+  color: #6d746e;
+  text-align: center;
+  padding-top: 15px;
+}
+.veyra-occasion-strip {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+  padding: 28px 25px;
+}
+.veyra-occasion-strip > span {
+  font-size: 8px;
+  color: #677165;
+  letter-spacing: 0.18em;
+}
+.veyra-occasion-strip p {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  margin: 13px 0 0;
+  font-family: var(--serif);
+  font-size: 20px;
+  color: #435448;
+}
+.veyra-occasion-strip i {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+.veyra-section {
+  max-width: 1200px;
+  padding: 86px 40px;
+  margin: auto;
+}
+.veyra-section h2,
+.veyra-closing h2 {
+  font-family: var(--serif);
+  font-size: clamp(30px, 3.5vw, 43px);
+  line-height: 1.25;
+  letter-spacing: -0.035em;
+  color: var(--green);
+  margin: 16px 0;
+}
+.veyra-section-heading {
+  display: flex;
+  gap: 30px;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 35px;
+}
+.veyra-section-heading > p,
+.veyra-section p {
+  color: #646c64;
+  font-size: 12px;
+  line-height: 1.9;
+}
+.veyra-step-grid,
+.veyra-occasion-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 36px;
+}
+.veyra-step-grid article {
+  border-top: 1px solid #d8dace;
+  padding-top: 25px;
+}
+.veyra-step-grid article > span,
+.veyra-occasion-grid article > span {
+  display: block;
+  font-family: var(--serif);
+  font-size: 28px;
+  color: #80612e;
+  margin-bottom: 27px;
+}
+.veyra-step-grid h3,
+.veyra-occasion-grid h3 {
+  font-weight: 550;
+  font-size: 16px;
+  letter-spacing: -0.02em;
+  line-height: 1.5;
+}
+.veyra-invitation-section {
+  padding-top: 30px;
+}
+.veyra-invitation-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+.veyra-sample-invite {
+  min-height: 350px;
+  padding: 35px 26px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #fffcf3;
+  border: 1px solid #d9d2bd;
+}
+.veyra-sample-invite > span {
+  font-size: 38px;
+  font-family: var(--serif);
+  color: #80612e;
+  margin-bottom: 24px;
+}
+.veyra-sample-invite small {
+  font-size: 7px;
+  letter-spacing: 0.17em;
+  color: #626962;
+}
+.veyra-sample-invite h3 {
+  font-family: var(--serif);
+  font-size: 30px;
+  font-weight: 400;
+  line-height: 1.3;
+  margin: 20px 0 6px;
+  color: var(--green);
+}
+.veyra-sample-invite p {
+  font-size: 10px;
+}
+.veyra-sample-invite > div {
+  border-top: 1px solid #d5d3c3;
+  border-bottom: 1px solid #d5d3c3;
+  padding: 12px 8px;
+  font-size: 8px;
+  letter-spacing: 0.17em;
+  margin: 14px 0 22px;
+}
+.sample-modern {
+  background: #e5ebe5;
+  border-color: #d8e0d7;
+  border-radius: 75px 75px 0 0;
+}
+.sample-modern > span {
+  color: var(--green);
+}
+.sample-floral {
+  background:
+    radial-gradient(ellipse at top left, #e2e8cf, transparent 55%),
+    radial-gradient(ellipse at bottom right, #eddad7, transparent 50%), #fffaf4;
+}
+.veyra-section-footnote {
+  text-align: center;
+  margin-top: 25px;
+  font-size: 10px !important;
+}
+.veyra-attendance {
+  display: grid;
+  grid-template-columns: 1fr 0.85fr;
+  align-items: center;
+  gap: 100px;
+  padding-top: 35px;
+}
+.veyra-attendance > div > p {
+  max-width: 440px;
+}
+.veyra-attendance ul {
+  list-style: none;
+  padding: 8px 0 20px;
+  font-size: 12px;
+  color: #4d5f51;
+}
+.veyra-attendance li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 17px 0;
+}
+.veyra-attendance li svg {
+  width: 16px;
+  height: 16px;
+}
+.veyra-attendance-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  padding: 36px;
+  border-radius: 10px;
+  box-shadow: 0 12px 40px #163d3407;
+}
+.veyra-attendance-card h3 {
+  font-family: var(--serif);
+  font-size: 35px;
+  font-weight: 400;
+  color: var(--green);
+  margin: 20px 0 26px;
+}
+.veyra-attendance-card > div {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid var(--border);
+  padding: 18px 0;
+  gap: 15px;
+  font-size: 11px;
+}
+.veyra-attendance-card > div > strong {
+  color: var(--green);
+  font-size: 11px;
+  white-space: nowrap;
+}
+.veyra-attendance-card > p {
+  font-size: 9px;
+  margin-bottom: 0;
+}
+.veyra-food-section {
+  background: var(--green);
+}
+.veyra-food-inner {
+  display: grid;
+  grid-template-columns: 0.85fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+.veyra-food-inner h2 {
+  color: var(--paper);
+}
+.veyra-food-inner .veyra-kicker {
+  color: #d7c39b;
+}
+.veyra-food-inner p {
+  color: #d3ded6;
+}
+.veyra-food-symbol {
+  min-height: 250px;
+  border: 1px solid #ffffff26;
+  border-radius: 150px 150px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  color: #d8c69e;
+}
+.veyra-food-symbol > span {
+  font-family: var(--serif);
+  font-size: 24px;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--paper);
+}
+.veyra-food-inner .veyra-food-disclaimer {
+  font-size: 10px;
+  color: #d8c69e;
+}
+.veyra-occasion-grid article {
+  padding: 25px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #ffffff60;
+}
+.veyra-professionals {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 25px;
+  align-items: center;
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+.veyra-professionals > svg {
+  flex-shrink: 0;
+  color: var(--green);
+}
+.veyra-professionals > div {
+  flex: 1;
+}
+.veyra-professionals h2 {
+  font-size: 28px;
+}
+.veyra-professionals p {
+  max-width: 650px;
+}
+.veyra-faq {
+  display: grid;
+  grid-template-columns: 0.8fr 1fr;
+  gap: 70px;
+}
+.veyra-faq details {
+  border-bottom: 1px solid var(--border);
+  padding: 20px 0;
+}
+.veyra-faq summary {
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 550;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  list-style: none;
+}
+.veyra-faq summary::-webkit-details-marker {
+  display: none;
+}
+.veyra-faq summary span {
+  color: #80612e;
+  font-size: 18px;
+  line-height: 1;
+}
+.veyra-faq details[open] summary span {
+  transform: rotate(45deg);
+}
+.veyra-closing {
+  text-align: center;
+  padding: 75px 25px 90px;
+  background: #e9ede5;
+}
+.veyra-closing > svg {
+  display: block;
+  margin: 0 auto 22px;
+  color: var(--green);
+}
+.veyra-closing h2 {
+  font-size: clamp(40px, 4.5vw, 62px);
+  margin: 20px 0;
+}
+.veyra-closing p {
+  color: #606b61;
+  font-size: 12px;
+  margin-bottom: 25px;
+}
+.veyra-footer {
+  max-width: 1200px;
+  margin: auto;
+  padding: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 25px;
+}
+.veyra-footer p {
+  font-size: 10px;
+  color: #656d65;
+  margin: 13px 0 0;
+}
+.veyra-footer > div:nth-child(2) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 23px;
+  font-size: 11px;
+}
+.veyra-footer small {
+  font-size: 10px;
+}
+@media (max-width: 1024px) {
+  .veyra-nav-links {
+    gap: 18px;
+  }
+  .veyra-nav-links > a[href="#professionals"] {
+    display: none;
+  }
+  .veyra-hero {
+    gap: 35px;
+    padding-top: 45px;
+  }
+  .veyra-attendance {
+    gap: 45px;
+  }
+  .veyra-food-inner {
+    gap: 45px;
+  }
+}
+@media (max-width: 767px) {
+  .veyra-nav {
+    padding: 22px;
+  }
+  .veyra-nav-links > a:not(.button) {
+    display: none;
+  }
+  .veyra-nav-links .button {
+    font-size: 11px;
+    padding: 10px 13px;
+  }
+  .veyra-hero {
+    grid-template-columns: 1fr;
+    padding: 40px 25px 55px;
+    gap: 44px;
+  }
+  .veyra-hero h1 {
+    font-size: clamp(47px, 10vw, 68px);
+  }
+  .veyra-product-preview {
+    max-width: 500px;
+    width: 100%;
+    margin: auto;
+    transform: none;
+  }
+  .veyra-hero-copy > p {
+    font-size: 14px;
+  }
+  .veyra-occasion-strip p {
+    font-size: 17px;
+    gap: 14px;
+  }
+  .veyra-section {
+    padding: 55px 25px;
+  }
+  .veyra-section-heading {
+    display: block;
+    margin-bottom: 26px;
+  }
+  .veyra-step-grid,
+  .veyra-occasion-grid {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+  .veyra-step-grid article > span {
+    margin-bottom: 15px;
+  }
+  .veyra-invitation-gallery {
+    gap: 13px;
+  }
+  .veyra-sample-invite {
+    min-height: 290px;
+    padding: 25px 12px;
+  }
+  .veyra-sample-invite h3 {
+    font-size: 23px;
+  }
+  .veyra-attendance,
+  .veyra-food-inner,
+  .veyra-faq {
+    grid-template-columns: 1fr;
+    gap: 35px;
+  }
+  .veyra-professionals {
+    flex-wrap: wrap;
+  }
+  .veyra-professionals > div {
+    flex-basis: 75%;
+  }
+  .veyra-footer {
+    flex-wrap: wrap;
+    padding: 35px 25px;
+  }
+  .veyra-footer > div:nth-child(2) {
+    gap: 20px;
+  }
+}
+@media (max-width: 480px) {
+  .veyra-invitation-gallery {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .veyra-sample-invite {
+    min-height: 320px;
+  }
+  .preview-dark {
+    margin: 13px;
+    padding: 22px;
+  }
+  .preview-window-bar {
+    padding: 16px;
+  }
+  .preview-response {
+    padding: 17px;
+  }
+  .preview-confirmed {
+    font-size: 7px;
+  }
+  .preview-dark h2 {
+    font-size: 28px;
+  }
+  .veyra-occasion-strip i {
+    display: none;
+  }
+  .veyra-occasion-strip p {
+    column-gap: 18px;
+  }
+  .veyra-attendance-card {
+    padding: 26px;
+  }
+  .veyra-professionals > svg {
+    display: none;
+  }
+  .veyra-professionals > div {
+    flex-basis: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .loading {
+    animation: none;
+  }
+}
+
+.auth-form,
+.auth-form-inner {
+  min-width: 0;
+}
+.auth-form-inner {
+  width: 100%;
+  max-width: 360px;
 }
