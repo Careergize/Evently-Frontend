@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Toaster } from "sonner";
 import "./globals.css";
 export const metadata: Metadata = {
-  title: "Evently — Every guest. Every detail.",
+  title: "Inviora — Every guest. Every detail.",
   description:
     "One invitation link. Every guest accounted for. Smarter event planning.",
 };

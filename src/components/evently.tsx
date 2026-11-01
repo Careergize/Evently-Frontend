@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
-  Flower2,
   LayoutDashboard,
   CalendarDays,
   Users,
@@ -22,11 +21,10 @@ import {
   Bell,
   HelpCircle,
   Leaf,
-  Heart,
   CheckCircle2,
-  Mail,
 } from "lucide-react";
-import { motion } from "motion/react";
+import { Brand, VeyraMark } from "./brand";
+import { Marketing } from "./marketing";
 import {
   ResponsiveContainer,
   BarChart,
@@ -40,15 +38,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "./ui/button";
-import { api, Field, Modal, Art, Stat, fmtDate, type Data } from "./shared";
-function Brand() {
-  return (
-    <Link href="/" className="brand">
-      <Flower2 size={29} strokeWidth={1.3} />
-      evently<span style={{ color: "#b99558", marginLeft: -7 }}>.</span>
-    </Link>
-  );
-}
+import { api, Field, Modal, Stat, fmtDate, type Data } from "./shared";
 function Shell({
   children,
   user,
@@ -82,6 +72,14 @@ function Shell({
             {label}
           </a>
         ))}
+        <Link className="side-link" href="/dashboard/partners">
+          <Users strokeWidth={1.5} />
+          Partner workspace
+        </Link>
+        <Link className="side-link" href="/dashboard/notifications">
+          <Bell strokeWidth={1.5} />
+          Notifications
+        </Link>
         <Link className="side-link" href="/dashboard/settings">
           <Settings strokeWidth={1.5} />
           Settings
@@ -164,7 +162,7 @@ function Shell({
             <Link href="/#faq" aria-label="Help">
               <HelpCircle strokeWidth={1.4} />
             </Link>
-            <Link href="/dashboard?view=activity" aria-label="Recent activity">
+            <Link href="/dashboard/notifications" aria-label="Notifications">
               <Bell strokeWidth={1.4} />
             </Link>
             <div
@@ -179,7 +177,7 @@ function Shell({
           {children}
           <footer className="app-footer">
             <span>
-              © {new Date().getFullYear()} Evently. Made for meaningful
+              © {new Date().getFullYear()} Veyra. Made for meaningful
               gatherings.
             </span>
             <div>
@@ -390,6 +388,18 @@ function Dashboard({ user }: { user: Data }) {
               sub={`${totals("declined")} people declined · ${totals("maybe")} maybe`}
               icon={Clock}
             />
+            <Stat
+              label="Estimated attendance"
+              value={totals("expected")}
+              sub="Estimate across event invitations"
+              icon={Leaf}
+            />
+            <Stat
+              label="RSVP completion"
+              value={`${totals("invitations") ? Math.round((totals("responded") / totals("invitations")) * 100) : 0}%`}
+              sub="Responded active invitations"
+              icon={CheckCircle2}
+            />
           </div>
           {view === "guests" ? (
             <div className="panel">
@@ -598,7 +608,7 @@ function Dashboard({ user }: { user: Data }) {
           )}
           <div className="bottom-banner">
             <div style={{ display: "flex", gap: 18, alignItems: "center" }}>
-              <Heart size={30} strokeWidth={1} color="#b59b63" />
+              <VeyraMark size={36} />
               <div>
                 <h3>Good company starts with a thoughtful invitation.</h3>
                 <p>
@@ -625,6 +635,14 @@ const authSchema = z.object({
 });
 function Auth({ mode }: { mode: string }) {
   const router = useRouter();
+  const [collaborationToken, setCollaborationToken] = useState("");
+  useEffect(() => {
+    const raw = new URLSearchParams(location.search).get("collaborationToken");
+    if (raw && /^[a-f0-9]{64}$/.test(raw)) setCollaborationToken(raw);
+  }, []);
+  const returnQuery = collaborationToken
+    ? `?collaborationToken=${collaborationToken}`
+    : "";
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState("");
@@ -653,7 +671,7 @@ function Auth({ mode }: { mode: string }) {
       if (forgot || reset) setDone(result.message);
       else {
         toast.success(register ? "Your account is ready" : "Welcome back");
-        router.push("/dashboard");
+        router.push(`/dashboard${returnQuery}`);
       }
     } catch (e) {
       setError((e as Error).message);
@@ -713,7 +731,7 @@ function Auth({ mode }: { mode: string }) {
             <div className="success">
               {done}
               <p>
-                <Link href="/login">Back to sign in →</Link>
+                <Link href={`/login${returnQuery}`}>Back to sign in →</Link>
               </p>
             </div>
           ) : (
@@ -790,11 +808,13 @@ function Auth({ mode }: { mode: string }) {
           <p className="legal">
             {register ? (
               <>
-                Already have an account? <Link href="/login">Sign in</Link>
+                Already have an account?{" "}
+                <Link href={`/login${returnQuery}`}>Sign in</Link>
               </>
             ) : !forgot && !reset ? (
               <>
-                New to Evently? <Link href="/register">Create an account</Link>
+                New to Veyra?{" "}
+                <Link href={`/register${returnQuery}`}>Create an account</Link>
               </>
             ) : null}
           </p>
@@ -804,333 +824,6 @@ function Auth({ mode }: { mode: string }) {
           </p>
         </div>
       </div>
-    </div>
-  );
-}
-function Marketing() {
-  return (
-    <div className="marketing">
-      <nav>
-        <Brand />
-        <div className="links">
-          <a href="#features">Features</a>
-          <a href="#how-it-works">How it works</a>
-          <a href="#pricing">Pricing</a>
-          <Link href="/login">Sign in</Link>
-          <Button asChild>
-            <Link href="/register">
-              Get started <ArrowUpRight size={14} />
-            </Link>
-          </Button>
-        </div>
-      </nav>
-      <section className="hero">
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <span className="eyebrow">
-            BIG MOMENTS. LITTLE DETAILS. ALL TOGETHER.
-          </span>
-          <h1>
-            Celebrate more.
-            <br />
-            <em style={{ color: "#68815b" }}>Worry less.</em>
-          </h1>
-          <p>
-            Beautiful invitations. Effortless RSVPs. A clearer guest count.
-            Bring your people together, and leave the guesswork behind.
-          </p>
-          <div className="hero-actions">
-            <Button asChild>
-              <Link href="/register">
-                Create Your Event <ArrowRight size={15} />
-              </Link>
-            </Button>
-            <Button variant="outline" asChild>
-              <a href="#how-it-works">See How It Works</a>
-            </Button>
-          </div>
-          <p style={{ fontSize: 11, marginTop: 24 }}>
-            <Check size={12} style={{ display: "inline", marginRight: 5 }} />
-            No app for your guests. Just one beautiful link.
-          </p>
-        </motion.div>
-        <div className="hero-visual">
-          <div className="invitation-mini">
-            <Flower2
-              size={35}
-              strokeWidth={1}
-              style={{ margin: "auto", color: "#899b70" }}
-            />
-            <p>TOGETHER WITH OUR FAMILIES</p>
-            <h2>
-              Ananya
-              <br />& Aarav
-            </h2>
-            <p>INVITE YOU TO CELEBRATE THEIR WEDDING</p>
-            <div
-              style={{
-                borderTop: "1px solid #d9ddcb",
-                borderBottom: "1px solid #d9ddcb",
-                padding: 15,
-                fontFamily: "Georgia",
-                fontSize: 17,
-              }}
-            >
-              14 · FEBRUARY · 2027
-            </div>
-            <p>THE LEELA PALACE · BENGALURU</p>
-          </div>
-          <div className="mini-stat">
-            <CheckCircle2 size={27} strokeWidth={1.3} />
-            <div>
-              <strong>You’re on the list.</strong>
-              <span>One reply. A little more peace of mind.</span>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section className="marketing-section center" id="how-it-works">
-        <span className="eyebrow">FROM INVITATION TO CELEBRATION</span>
-        <h2 style={{ marginTop: 15 }}>
-          Three little steps. One lovely gathering.
-        </h2>
-        <p>Spend less time following up, and more time looking forward.</p>
-        <div className="feature-grid">
-          {[
-            [
-              "01",
-              "Make it yours",
-              "Create an event and choose a beautiful invitation that feels like you.",
-            ],
-            [
-              "02",
-              "Share the joy",
-              "Send one link on WhatsApp. Your guests reply without an account or an app.",
-            ],
-            [
-              "03",
-              "Plan with clarity",
-              "See every response, count every person, and plan your food thoughtfully.",
-            ],
-          ].map(([n, t, p]) => (
-            <div className="feature" key={n}>
-              <div className="step-num">{n}</div>
-              <h3>{t}</h3>
-              <p>{p}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-      <section className="marketing-section center" id="features">
-        <span className="eyebrow">EVERY DETAIL, A LITTLE EASIER</span>
-        <h2 style={{ marginTop: 15 }}>Made for the way we celebrate.</h2>
-        <div className="feature-grid">
-          {[
-            [
-              Users,
-              "Count people, not just replies",
-              "Family and household invitations keep your real guest count clear.",
-            ],
-            [
-              Mail,
-              "An invitation worth opening",
-              "Elegant, mobile-friendly designs for weddings, birthdays, and everything between.",
-            ],
-            [
-              Leaf,
-              "A thoughtful table",
-              "Turn actual RSVPs into a provisional catering plan, with assumptions you control.",
-            ],
-          ].map(([Icon, t, p]: Data) => (
-            <div className="feature" key={t}>
-              <Icon size={29} strokeWidth={1.2} />
-              <h3>{t}</h3>
-              <p>{p}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-      <section className="marketing-section center">
-        <span className="eyebrow">A LITTLE PREVIEW</span>
-        <h2 style={{ marginTop: 15 }}>Your whole celebration, at a glance.</h2>
-        <div
-          className="panel"
-          style={{
-            textAlign: "left",
-            maxWidth: 900,
-            margin: "30px auto",
-            boxShadow: "0 15px 60px #1b3e2810",
-          }}
-        >
-          <div className="panel-heading">
-            <h3>Ananya & Aarav · Illustrative preview</h3>
-            <span className="badge">Wedding</span>
-          </div>
-          <div className="stats" style={{ marginBottom: 0 }}>
-            <Stat
-              label="Invited people"
-              value="120"
-              sub="From tracked invitations"
-              icon={Users}
-            />
-            <Stat
-              label="Confirmed"
-              value="84"
-              sub="People, including families"
-              icon={CheckCircle2}
-            />
-            <Stat
-              label="Maybe"
-              value="12"
-              sub="Still making plans"
-              icon={Clock}
-            />
-            <Stat
-              label="Awaiting reply"
-              value="18"
-              sub="Time for a gentle reminder"
-              icon={Mail}
-            />
-          </div>
-        </div>
-        <p>
-          Illustrative data. Your dashboard always uses your stored event and
-          guest information.
-        </p>
-      </section>
-      <section className="marketing-section center">
-        <h2>An invitation for every kind of joy.</h2>
-        <div className="template-grid">
-          {["Botanical", "Royal", "Minimal"].map((template, i) => (
-            <div className="panel" key={template}>
-              <Art
-                event={{
-                  title: [
-                    "Ananya & Aarav",
-                    "A golden milestone",
-                    "A little celebration",
-                  ][i],
-                  type: ["Wedding", "Anniversary", "Birthday"][i],
-                  startsAt: "2027-02-14",
-                  timezone: "Asia/Kolkata",
-                  template,
-                  theme: i === 2 ? "rose" : "emerald",
-                }}
-              />
-              <p>{template}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-      <section
-        className="marketing-section"
-        style={{ background: "#edf1e5", borderRadius: 20 }}
-      >
-        <div className="two-col" style={{ alignItems: "center" }}>
-          <div>
-            <span className="eyebrow">A FULL TABLE. A LIGHTER FOOTPRINT.</span>
-            <h2 style={{ marginTop: 16 }}>Good food. Thoughtful quantities.</h2>
-            <p className="muted">
-              Use confirmed replies, maybe responses, and your own assumptions
-              to plan each meal. Compare plate costs and add a sensible
-              contingency.
-            </p>
-          </div>
-          <div className="panel" style={{ margin: 0 }}>
-            <Leaf size={30} strokeWidth={1} />
-            <h3 style={{ fontFamily: "Georgia", fontSize: 25, marginTop: 20 }}>
-              Clarity over guesswork.
-            </h3>
-            <p className="muted">
-              Our estimates are transparent and provisional. You stay in control
-              of every quantity and every decision.
-            </p>
-            <Button asChild>
-              <Link href="/register">
-                Start planning <ArrowRight size={14} />
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </section>
-      <section className="marketing-section center" id="pricing">
-        <span className="eyebrow">ROOM TO CELEBRATE</span>
-        <h2 style={{ marginTop: 15 }}>Start with the essentials.</h2>
-        <div className="panel" style={{ maxWidth: 450, margin: "auto" }}>
-          <h3>Evently MVP</h3>
-          <p style={{ fontFamily: "Georgia", fontSize: 38 }}>
-            Free to get started
-          </p>
-          <p className="muted">
-            Invitations, household RSVPs, attendance insights, and catering
-            planning. No payment details required.
-          </p>
-          <Button asChild>
-            <Link href="/register">
-              Create Your Event <ArrowRight size={14} />
-            </Link>
-          </Button>
-        </div>
-      </section>
-      <section className="marketing-section center" id="faq">
-        <h2>A few things you might be wondering.</h2>
-        <div className="faq">
-          {[
-            [
-              "Do guests need an account?",
-              "No. They open their invitation link and respond directly. No app, account, or password needed.",
-            ],
-            [
-              "Can a whole family reply together?",
-              "Yes. A household invitation represents multiple people. Guests confirm their party size within the invitation limit.",
-            ],
-            [
-              "Can guests change their minds?",
-              "Yes, through their invitation link until the RSVP deadline or until you close responses. Public guests should use the same browser or save their private update link.",
-            ],
-            [
-              "Does Evently predict attendance using AI?",
-              "No. Estimates use editable probabilities and your guest data. Every assumption is visible, and all estimates are provisional.",
-            ],
-            [
-              "Who can see my guest information?",
-              "Only your organiser account can access your event guest list. Caterers and partners do not receive guest details by default.",
-            ],
-          ].map(([q, a]) => (
-            <details key={q}>
-              <summary>{q}</summary>
-              <p>{a}</p>
-            </details>
-          ))}
-        </div>
-      </section>
-      <section className="marketing-section center">
-        <h2>Make room for what matters.</h2>
-        <p>Your people. Your moments. A little less worry.</p>
-        <Button asChild>
-          <Link href="/register">
-            Create Your Event <ArrowRight size={15} />
-          </Link>
-        </Button>
-        <p style={{ fontSize: 12, marginTop: 30 }}>
-          An event planner or caterer?{" "}
-          <Link href="/partners" style={{ textDecoration: "underline" }}>
-            Let’s build something together.
-          </Link>
-        </p>
-      </section>
-      <footer className="marketing-footer">
-        <Brand />
-        <span>Thoughtfully made for meaningful gatherings.</span>
-        <div>
-          <Link href="/privacy">Privacy Policy</Link>
-          <Link href="/terms">Terms</Link>
-          <Link href="/partners">Partners</Link>
-        </div>
-      </footer>
     </div>
   );
 }
@@ -1169,6 +862,7 @@ function Partner() {
             <div className="fields">
               {[
                 ["businessName", "Business name"],
+                ["services", "Services offered"],
                 ["contactName", "Contact name"],
                 ["email", "Email"],
                 ["phone", "Phone"],
@@ -1216,7 +910,7 @@ function Legal({ privacy }: { privacy: boolean }) {
           ? "Your moments are personal. Your data should be too."
           : "Terms of use"}
       </h1>
-      <p className="muted">Effective 30 October 2026 · Evently MVP</p>
+      <p className="muted">Effective 30 October 2026 · Veyra</p>
       {privacy ? (
         <>
           <h2>What we collect</h2>
@@ -1253,7 +947,7 @@ function Legal({ privacy }: { privacy: boolean }) {
         </>
       ) : (
         <>
-          <h2>Using Evently</h2>
+          <h2>Using Veyra</h2>
           <p>
             Use the service only for events you are authorised to manage. Obtain
             an appropriate basis for collecting guest information and sharing
@@ -1275,18 +969,19 @@ function Legal({ privacy }: { privacy: boolean }) {
         </>
       )}
       <Button variant="outline" asChild>
-        <Link href="/">Back to Evently</Link>
+        <Link href="/">Back to Veyra</Link>
       </Button>
     </div>
   );
 }
-function AccountSettings() {
+function AccountSettings({ user }: { user: Data }) {
   const [confirm, setConfirm] = useState(false);
   const [busy, setBusy] = useState(false);
   const router = useRouter();
   return (
     <>
       <h1>Account settings</h1>
+      <ProfileSettings user={user} />
       <div className="panel">
         <h2>Your privacy, your choice.</h2>
         <p>
@@ -1328,6 +1023,12 @@ function AccountSettings() {
     </>
   );
 }
+import {
+  AcceptCollaboration,
+  PartnerWorkspace,
+  Notifications,
+  ProfileSettings,
+} from "./collaboration";
 import { EventWizard } from "./wizard";
 import { EventDetail } from "./event-detail";
 import { Invitation } from "./invitation";
@@ -1339,7 +1040,16 @@ export default function Evently({ path }: { path: string[] }) {
     if (path[0] === "dashboard")
       api("auth/me")
         .then(setUser)
-        .catch(() => router.replace("/login"))
+        .catch(() => {
+          const raw = new URLSearchParams(location.search).get(
+            "collaborationToken",
+          );
+          router.replace(
+            raw && /^[a-f0-9]{64}$/.test(raw)
+              ? `/login?collaborationToken=${raw}`
+              : "/login",
+          );
+        })
         .finally(() => setChecked(true));
   }, [path, router]);
   if (!path.length) return <Marketing />;
@@ -1361,8 +1071,13 @@ export default function Evently({ path }: { path: string[] }) {
       );
     return (
       <Shell user={user} path={path}>
-        {path[1] === "settings" ? (
-          <AccountSettings />
+        <AcceptCollaboration />
+        {path[1] === "partners" ? (
+          <PartnerWorkspace />
+        ) : path[1] === "notifications" ? (
+          <Notifications />
+        ) : path[1] === "settings" ? (
+          <AccountSettings user={user} />
         ) : path[1] === "events" && path[2] === "new" ? (
           <EventWizard />
         ) : path[1] === "events" && path[3] === "edit" ? (

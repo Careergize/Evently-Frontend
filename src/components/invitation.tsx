@@ -2,8 +2,9 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Flower2, MapPin, CheckCircle2, ArrowRight, Copy } from "lucide-react";
+import { Flower2, CheckCircle2, ArrowRight, Copy } from "lucide-react";
 import { api, Field, fmtDate, type Data } from "./shared";
+import { InvitationDesign } from "./invitation-design";
 import { Button } from "./ui/button";
 export function Invitation({ token }: { token: string }) {
   const [data, setData] = useState<Data>(null);
@@ -42,9 +43,17 @@ export function Invitation({ token }: { token: string }) {
             attendees:
               d.response?.selections?.find((v: Data) => v.sessionId === s.id)
                 ?.attendees ??
-              d.response?.partySize ??
-              1,
-            meal: d.response?.meal || "Vegetarian",
+              (d.response
+                ? 0
+                : s.rsvpEnabled &&
+                    !(s.deadline && new Date(s.deadline) < new Date())
+                  ? 1
+                  : 0),
+            meal:
+              d.response?.selections?.find((v: Data) => v.sessionId === s.id)
+                ?.meal ||
+              d.response?.meal ||
+              "Vegetarian",
           })),
         }));
       })
@@ -64,7 +73,7 @@ export function Invitation({ token }: { token: string }) {
               <p className="muted">
                 Please ask your host for an updated invitation link.
               </p>
-              <Link href="/">Visit Evently →</Link>
+              <Link href="/">Visit Veyra →</Link>
             </>
           ) : (
             <div className="loading" style={{ marginTop: 30 }} />
@@ -88,85 +97,7 @@ export function Invitation({ token }: { token: string }) {
               : undefined,
       }}
     >
-      <article
-        className={`invitation-paper template-${e.template.toLowerCase()}`}
-      >
-        {e.coverImage ? (
-          <img className="cover" src={e.coverImage} alt={e.title} />
-        ) : (
-          <div className="ornament">❧</div>
-        )}
-        <span className="eyebrow">{e.host}</span>
-        <p style={{ fontSize: 11, letterSpacing: 2, marginTop: 22 }}>
-          REQUEST THE PLEASURE OF YOUR COMPANY
-        </p>
-        <h1>{e.title}</h1>
-        <p
-          style={{
-            whiteSpace: "pre-line",
-            color: "#879274",
-            fontFamily: "Georgia",
-            fontSize: 18,
-          }}
-        >
-          {e.message}
-        </p>
-        <div className="date">
-          {new Date(e.startsAt).toLocaleDateString("en-IN", {
-            weekday: "long",
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-            timeZone: e.timezone,
-          })}
-          <br />
-          <strong>
-            {new Date(e.startsAt).toLocaleTimeString("en-IN", {
-              hour: "numeric",
-              minute: "2-digit",
-              timeZone: e.timezone,
-            })}
-          </strong>
-          {e.endsAt && (
-            <>
-              {" "}
-              –{" "}
-              {new Date(e.endsAt).toLocaleTimeString("en-IN", {
-                hour: "numeric",
-                minute: "2-digit",
-                timeZone: e.timezone,
-              })}
-            </>
-          )}
-          <br />
-          <small>{e.timezone}</small>
-        </div>
-        <MapPin size={20} strokeWidth={1} style={{ margin: "auto" }} />
-        <h3
-          style={{
-            fontFamily: "Georgia",
-            fontSize: 23,
-            fontWeight: 400,
-            margin: "10px 0",
-          }}
-        >
-          {e.venue}
-        </h3>
-        <p className="muted" style={{ fontSize: 12 }}>
-          {e.address}
-        </p>
-        {e.mapsUrl && (
-          <Button variant="outline" size="sm" asChild>
-            <a href={e.mapsUrl} target="_blank" rel="noopener noreferrer">
-              Get directions <ArrowRight size={12} />
-            </a>
-          </Button>
-        )}
-        {e.description && (
-          <p style={{ fontSize: 13, whiteSpace: "pre-line" }}>
-            {e.description}
-          </p>
-        )}
+      <InvitationDesign event={e}>
         <div className="rsvp-form">
           {closed ? (
             <div className="notice">
@@ -230,9 +161,7 @@ export function Invitation({ token }: { token: string }) {
                         attendees:
                           form.status === "NO"
                             ? 0
-                            : e.sessions.length === 1
-                              ? Number(form.partySize)
-                              : Math.min(v.attendees, form.partySize),
+                            : Math.min(v.attendees, form.partySize),
                         meal: form.meal,
                       })),
                     },
@@ -265,19 +194,28 @@ export function Invitation({ token }: { token: string }) {
               </p>
               {data.guest ? (
                 <p className="notice">
-                  An invitation for <strong>{data.guest.name}</strong> · Up to{" "}
+                  {data.guest.source === "OPEN"
+                    ? "Self-reported response for "
+                    : "An invitation for "}{" "}
+                  <strong>{data.guest.name}</strong> · Up to{" "}
                   {Math.min(data.guest.invitedSize, s.maxPartySize)} people
                 </p>
               ) : (
-                <Field label="Your name">
-                  <input
-                    value={form.name}
-                    onChange={(v) => update("name", v.target.value)}
-                    required
-                    maxLength={120}
-                    autoComplete="name"
-                  />
-                </Field>
+                <>
+                  <p className="notice">
+                    Open invitation · your response is self-reported and is not
+                    a verified invited household.
+                  </p>
+                  <Field label="Your name">
+                    <input
+                      value={form.name}
+                      onChange={(v) => update("name", v.target.value)}
+                      required
+                      maxLength={120}
+                      autoComplete="name"
+                    />
+                  </Field>
+                </>
               )}
               <div className="rsvp-options">
                 {[
@@ -311,7 +249,23 @@ export function Invitation({ token }: { token: string }) {
                         required
                         value={form.partySize}
                         onChange={(v) =>
-                          update("partySize", Number(v.target.value))
+                          setForm({
+                            ...form,
+                            partySize: Number(v.target.value),
+                            selections: form.selections.map(
+                              (selection: Data) => ({
+                                ...selection,
+                                attendees:
+                                  e.sessions.length === 1 &&
+                                  e.sessions[0].rsvpEnabled
+                                    ? Number(v.target.value)
+                                    : Math.min(
+                                        selection.attendees,
+                                        Number(v.target.value),
+                                      ),
+                              }),
+                            ),
+                          })
                         }
                       />
                     </Field>
@@ -328,18 +282,26 @@ export function Invitation({ token }: { token: string }) {
                       </select>
                     </Field>
                   )}
-                  {e.sessions.length > 1 && (
+                  {e.sessions.length > 0 && (
                     <>
                       <h3>Which celebrations will you join?</h3>
                       {e.sessions.map((session: Data) => (
                         <Field
                           label={`${session.title} · attendees`}
+                          hint={`${fmtDate(session.startsAt, e.timezone)} · ${new Date(session.startsAt).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit", timeZone: e.timezone })} · ${session.venue || e.venue}${!session.rsvpEnabled ? " · Responses closed" : ""}`}
                           key={session.id}
                         >
                           <input
                             type="number"
                             min={0}
                             max={form.partySize}
+                            disabled={
+                              !session.rsvpEnabled ||
+                              !!(
+                                session.deadline &&
+                                new Date(session.deadline) < new Date()
+                              )
+                            }
                             value={
                               form.selections.find(
                                 (v: Data) => v.sessionId === session.id,
@@ -384,7 +346,7 @@ export function Invitation({ token }: { token: string }) {
                   ? "Saving your response…"
                   : data.response
                     ? "Update response"
-                    : "Send my RSVP"}
+                    : e.rsvpLabel || "Send my RSVP"}
                 <ArrowRight size={14} />
               </Button>
               <p
@@ -405,7 +367,7 @@ export function Invitation({ token }: { token: string }) {
             </form>
           )}
         </div>
-      </article>
+      </InvitationDesign>
       <p
         style={{
           textAlign: "center",
@@ -414,10 +376,7 @@ export function Invitation({ token }: { token: string }) {
           marginTop: 25,
         }}
       >
-        A meaningful moment, brought together with{" "}
-        <Link href="/" style={{ fontFamily: "Georgia", fontSize: 17 }}>
-          evently.
-        </Link>
+        Created with <Link href="/" className="invitation-attribution">Veyra</Link>
       </p>
     </div>
   );

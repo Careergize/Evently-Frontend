@@ -1525,3 +1525,171 @@ td small {
     scroll-behavior: auto !important;
   }
 }
+
+/* Original invitation designs use type and CSS ornamentation; no third-party artwork. */
+.invitation-paper {
+  overflow-wrap: anywhere;
+  width: 100%;
+}
+.invitation-paper h1 {
+  font-size: clamp(2.3rem, 6vw, 4rem);
+}
+.invitation-kicker {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  margin-top: 24px;
+}
+.invitation-message {
+  white-space: pre-line;
+  line-height: 1.8;
+}
+.theme-gold {
+  --invite-accent: #8c6c35;
+}
+.theme-rose {
+  --invite-accent: #a25d72;
+}
+.theme-emerald {
+  --invite-accent: #365b49;
+}
+.invitation-paper h1,
+.invitation-paper .ornament {
+  color: var(--invite-accent);
+}
+.design-kerala {
+  background: #fff9e9;
+  border: 4px double #b09142;
+  outline: 1px solid #b09142;
+}
+.design-kerala .ornament {
+  border-bottom: 2px solid #b09142;
+  padding-bottom: 18px;
+}
+.design-modern {
+  background: #f3f1ed;
+  outline: none;
+  border: 0;
+  border-top: 12px solid #354d49;
+}
+.design-modern h1 {
+  font-family: Arial, sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: -0.05em;
+}
+.design-minimal {
+  background: #fffdf8;
+  outline: none;
+  border-color: #ddd4bc;
+}
+.design-minimal h1 {
+  font-style: normal;
+  font-weight: 400;
+}
+.design-floral {
+  background:
+    radial-gradient(ellipse at top left, #e6eccc 0, transparent 45%),
+    radial-gradient(ellipse at bottom right, #f3d9d5 0, transparent 45%),
+    #fffaf3;
+  border-radius: 100px 100px 5px 5px;
+}
+.design-birthday {
+  background:
+    radial-gradient(circle at 10% 15%, #d7a35f 0 5px, transparent 6px),
+    radial-gradient(circle at 90% 35%, #c8a9bb 0 8px, transparent 9px), #fff4dc;
+  border: 2px solid #dfb06d;
+  border-radius: 22px;
+  outline: none;
+}
+.design-birthday h1 {
+  font-style: normal;
+}
+.design-family {
+  background: #eaf0e8;
+  outline: none;
+  border-radius: 8px;
+  border-top: 8px solid #75816c;
+}
+.font-sans,
+.font-sans h1 {
+  font-family: Arial, sans-serif;
+}
+.font-classic,
+.font-classic h1 {
+  font-family: "Times New Roman", serif;
+}
+.preview-stage {
+  max-width: 720px;
+  margin: 24px auto;
+  transition: max-width 0.2s;
+}
+.preview-mobile {
+  max-width: 390px;
+}
+.preview-stage .invitation-paper {
+  padding: 36px 25px;
+}
+.design-preview {
+  margin: 25px 0;
+}
+.function-card {
+  border-bottom: 1px solid #e1e5d9;
+  padding: 20px 0;
+}
+.function-card:last-child {
+  border: 0;
+}
+.member-list {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0;
+}
+.page-heading > div,
+.toolbar > *,
+.two-col > * {
+  min-width: 0;
+}
+@media (max-width: 650px) {
+  .page-heading {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .page-heading > div {
+    flex-wrap: wrap;
+  }
+  .template-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .preview-stage,
+  .preview-stage * {
+    visibility: visible;
+  }
+  .preview-stage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.page-heading {
+  flex-wrap: wrap;
+}
+.page-heading > div:last-child {
+  flex-wrap: wrap;
+}
+
+.rsvp-form > form > .button:last-of-type {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  min-height: 44px;
+}
+.side-link {
+  min-height: 44px;
+}

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ArrowLeft, ArrowRight, Check, Save } from "lucide-react";
 import { api, Field, Art, type Data } from "./shared";
+import { templates, DesignPreview } from "./invitation-design";
 import { Button } from "./ui/button";
 const defaults = {
   title: "",
@@ -279,7 +280,7 @@ export function EventWizard({ id }: { id?: string }) {
             <h2>A first glimpse of your celebration.</h2>
             <p className="muted">Choose a design, then add your own touch.</p>
             <div className="template-grid">
-              {["Botanical", "Royal", "Minimal"].map((t) => (
+              {templates.map(([t, label]) => (
                 <button
                   type="button"
                   key={t}
@@ -294,7 +295,7 @@ export function EventWizard({ id }: { id?: string }) {
                     }}
                   />
                   <p>
-                    {t} {event.template === t ? "✓" : ""}
+                    {label} {event.template === t ? "✓" : ""}
                   </p>
                 </button>
               ))}
@@ -345,6 +346,26 @@ export function EventWizard({ id }: { id?: string }) {
                 Remove cover image
               </Button>
             )}
+            <div className="fields">
+              <Field label="Invitation font">
+                <select
+                  value={event.font || "serif"}
+                  onChange={(e) => update("font", e.target.value)}
+                >
+                  <option value="serif">Editorial serif</option>
+                  <option value="sans">Modern sans</option>
+                  <option value="classic">Classic serif</option>
+                </select>
+              </Field>
+              <Field label="RSVP button label">
+                <input
+                  value={event.rsvpLabel || "Send my RSVP"}
+                  maxLength={60}
+                  onChange={(e) => update("rsvpLabel", e.target.value)}
+                />
+              </Field>
+            </div>
+            <DesignPreview event={event} />
             <Field label="Your invitation message">
               <textarea
                 value={event.message}

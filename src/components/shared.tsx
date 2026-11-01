@@ -125,7 +125,7 @@ export function Modal({
 export function Art({ event }: { event: Data }) {
   return (
     <div
-      className={`event-art ${event.template === "Royal" ? "royal" : event.theme === "rose" ? "rose" : ""}`}
+      className={`event-art design-${(event.template || "Botanical").toLowerCase()} ${event.template === "Royal" ? "royal" : event.theme === "rose" ? "rose" : ""}`}
       style={
         event.coverImage
           ? {

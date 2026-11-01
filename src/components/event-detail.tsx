@@ -11,7 +11,6 @@ import {
   CheckCircle2,
   Leaf,
   Download,
-  Upload,
   Trash2,
   Pencil,
   Send,
@@ -36,12 +35,18 @@ import {
   Field,
   Modal,
   Stat,
-  Art,
   fmtDate,
   money,
   download,
   type Data,
 } from "./shared";
+import { Collaborators, ReadOnlyEvent } from "./collaboration";
+import { Reminders, ForecastHistory, CheckIns } from "./event-operations";
+import { InvitationShare } from "./invitation-share";
+import { GuestImport } from "./guest-import";
+import { Functions } from "./functions";
+import { Households } from "./households";
+import { DesignPreview } from "./invitation-design";
 import { Button } from "./ui/button";
 export function EventDetail({
   id,
@@ -56,10 +61,12 @@ export function EventDetail({
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("ALL");
   const [guest, setGuest] = useState<Data>(null);
+  const [shareGuest, setShareGuest] = useState<Data>(null);
   const [remove, setRemove] = useState<Data>(null);
   const [busy, setBusy] = useState(false);
   const [origin, setOrigin] = useState("");
-  const [importErrors, setImportErrors] = useState("");
+  const [importing, setImporting] = useState(false);
+  const [category, setCategory] = useState("ALL");
   const [plan, setPlan] = useState<Data>(null);
   const [session, setSession] = useState<Data>(null);
   const router = useRouter();
@@ -92,6 +99,7 @@ export function EventDetail({
     ) : (
       <div className="loading" />
     );
+  if (e.accessRole === "VIEWER") return <ReadOnlyEvent event={e} />;
   const a = e.analytics;
   const url = `${origin}/invite/${e.publicToken}`;
   const inviteLink = (g: Data) => `${origin}/invite/${g.token}`;
@@ -100,7 +108,8 @@ export function EventDetail({
       `${g.name} ${g.email || ""} ${g.household?.name || ""}`
         .toLowerCase()
         .includes(search.toLowerCase()) &&
-      (filter === "ALL" || (g.rsvp?.status || "PENDING") === filter),
+      (filter === "ALL" || (g.rsvp?.status || "PENDING") === filter) &&
+      (category === "ALL" || g.category === category),
   );
   const activities = e.invitations
     .filter((g: Data) => g.rsvp)
@@ -111,30 +120,41 @@ export function EventDetail({
     )
     .slice(0, 6);
   const exportGuests = () =>
-    download("evently-rsvps.csv", [
+    download(
+      `${e.title.replace(/[^a-z0-9]/gi, "-")}-guests-${new Date().toISOString().slice(0, 10)}.csv`,
       [
-        "Name",
-        "Email",
-        "Phone",
-        "Household",
-        "Invited people",
-        "Response",
-        "Confirmed party size",
-        "Meal",
-        "Last response",
+        [
+          "Event",
+          "Exported at",
+          "Category",
+          "Members",
+          "Name",
+          "Email",
+          "Phone",
+          "Household",
+          "Invited people",
+          "Response",
+          "Confirmed party size",
+          "Meal",
+          "Last response",
+        ],
+        ...e.invitations.map((g: Data) => [
+          e.title,
+          new Date().toISOString(),
+          g.category,
+          (g.members || []).join("; "),
+          g.name,
+          g.email,
+          g.phone,
+          g.household?.name,
+          g.invitedSize,
+          g.rsvp?.status || "PENDING",
+          g.rsvp?.partySize || 0,
+          g.rsvp?.meal,
+          g.rsvp?.updatedAt,
+        ]),
       ],
-      ...e.invitations.map((g: Data) => [
-        g.name,
-        g.email,
-        g.phone,
-        g.household?.name,
-        g.invitedSize,
-        g.rsvp?.status || "PENDING",
-        g.rsvp?.partySize || 0,
-        g.rsvp?.meal,
-        g.rsvp?.updatedAt,
-      ]),
-    ]);
+    );
   async function saveSettings(patch: Data) {
     setBusy(true);
     try {
@@ -183,10 +203,15 @@ export function EventDetail({
         {[
           "Overview",
           "Guests",
+          "Households",
+          "Functions",
+          "Reminders",
+          "Check-in",
           "Invitations",
           "Analytics",
           "Catering",
           "Settings",
+          ...(e.accessRole === "OWNER" ? ["Collaborators"] : []),
         ].map((t) => (
           <button
             className={t === tab ? "selected" : ""}
@@ -255,6 +280,7 @@ export function EventDetail({
                   Share on WhatsApp
                 </a>
               </Button>
+              <InvitationShare url={url} title={e.title} />
               <p className="notice" style={{ marginTop: 20 }}>
                 Public links are easy to share, but cannot identify invited
                 nonresponders. Use guest-specific links for reliable pending
@@ -353,55 +379,55 @@ export function EventDetail({
               <Download size={13} />
               Export
             </Button>
-            <label
-              className="button btn-outline small"
-              style={{ cursor: "pointer" }}
+            <select
+              className="input"
+              aria-label="Filter category"
+              value={category}
+              onChange={(v) => setCategory(v.target.value)}
             >
-              <Upload size={13} />
+              <option value="ALL">All categories</option>
+              {Array.from(
+                new Set(e.invitations.map((g: Data) => g.category)),
+              ).map((name: any) => (
+                <option key={name}>{name}</option>
+              ))}
+            </select>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setImporting(true)}
+            >
               Import CSV
-              <input
-                className="hidden-label"
-                type="file"
-                accept=".csv,text/csv"
-                onChange={async (ev) => {
-                  const f = ev.target.files?.[0];
-                  if (!f) return;
-                  setImportErrors("");
-                  try {
-                    if (f.size > 500000)
-                      throw Error("Maximum CSV size is 500 KB");
-                    const result = await api(
-                      `events/${id}/guests/import`,
-                      "POST",
-                      { csv: await f.text() },
-                    );
-                    toast.success(`${result.imported} guests imported`);
-                    load();
-                  } catch (err) {
-                    setImportErrors((err as Error).message);
-                  }
-                  ev.target.value = "";
-                }}
-              />
-            </label>
+            </Button>
           </div>
           <button
             className="icon-button"
             style={{ fontSize: 11, marginBottom: 15 }}
             onClick={() =>
-              download("evently-guest-template.csv", [
-                ["name", "email", "phone", "household", "invitedSize"],
-                ["Priya Kapoor", "", "", "Kapoor family", "4"],
+              download("veyra-guest-template.csv", [
+                [
+                  "name",
+                  "email",
+                  "phone",
+                  "household",
+                  "invitedSize",
+                  "category",
+                  "members",
+                ],
+                [
+                  "Priya Kapoor",
+                  "",
+                  "",
+                  "Kapoor family",
+                  "4",
+                  "Family",
+                  "Priya; Arun",
+                ],
               ])
             }
           >
             Download CSV template ↓
           </button>
-          {importErrors && (
-            <div className="error-box" style={{ whiteSpace: "pre-line" }}>
-              {importErrors}
-            </div>
-          )}
           <div className="table-wrap">
             <table>
               <thead>
@@ -420,6 +446,9 @@ export function EventDetail({
                   <tr key={g.id}>
                     <td>
                       {g.name}
+                      <small>
+                        {g.category} · {(g.members || []).join(", ")}
+                      </small>
                       <small>
                         {g.household?.name ||
                           g.email ||
@@ -486,6 +515,33 @@ export function EventDetail({
           )}
         </section>
       )}
+      {shareGuest && (
+        <Modal
+          title={`Invitation for ${shareGuest.name}`}
+          close={() => setShareGuest(null)}
+        >
+          <InvitationShare
+            url={inviteLink(shareGuest)}
+            title={`${e.title} · ${shareGuest.name}`}
+          />
+        </Modal>
+      )}
+      {tab === "Collaborators" && e.accessRole === "OWNER" && (
+        <Collaborators eventId={id} />
+      )}
+      {tab === "Reminders" && <Reminders event={e} />}
+      {tab === "Check-in" && <CheckIns event={e} saved={load} />}
+      {tab === "Households" && (
+        <Households eventId={id} saved={load} sessions={e.sessions} />
+      )}
+      {tab === "Functions" && <Functions event={e} saved={load} />}
+      {importing && (
+        <GuestImport
+          eventId={id}
+          close={() => setImporting(false)}
+          saved={load}
+        />
+      )}
       {tab === "Invitations" && (
         <>
           <div className="two-col">
@@ -512,7 +568,7 @@ export function EventDetail({
               </Button>
             </div>
             <div className="panel">
-              <Art event={e} />
+              <DesignPreview event={e} />
               <div style={{ display: "flex", gap: 10, marginTop: 15 }}>
                 <Button variant="outline" size="sm" asChild>
                   <Link href={`/invite/${e.publicToken}`}>
@@ -568,6 +624,13 @@ export function EventDetail({
                             <Copy size={12} />
                             Copy link
                           </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setShareGuest(g)}
+                          >
+                            Invitation QR
+                          </Button>
                           <Button size="sm" variant="outline" asChild>
                             <a
                               target="_blank"
@@ -619,6 +682,15 @@ export function EventDetail({
       )}
       {tab === "Analytics" && (
         <>
+          <section className="panel">
+            <h2>Guest categories</h2>
+            {a.categories.map((c: Data) => (
+              <p key={c.name}>
+                {c.name} · {c.invited} invited · {c.confirmed} confirmed ·{" "}
+                {c.maybe} maybe
+              </p>
+            ))}
+          </section>
           <div className="stats">
             <Stat
               label="Tracked invited people"
@@ -789,6 +861,7 @@ export function EventDetail({
       )}
       {tab === "Catering" && (
         <>
+          <ForecastHistory event={e} />
           <div className="page-heading">
             <div>
               <h2 style={{ marginBottom: 5 }}>A thoughtfully set table.</h2>
@@ -806,11 +879,12 @@ export function EventDetail({
             </Button>
           </div>
           {e.sessions.map((s: Data) => {
+            const f = a.functions.find((v: Data) => v.id === s.id);
             const p = s.plans[0];
             const count = p
               ? (p.overrideCount ??
                 Math.ceil(p.expected * (1 + p.contingency / 100)))
-              : a.recommended;
+              : f.recommended;
             return (
               <section className="panel" key={s.id}>
                 <div className="panel-heading">
@@ -824,13 +898,13 @@ export function EventDetail({
                       setPlan(
                         p || {
                           sessionId: s.id,
-                          expected: a.expected,
+                          expected: f.expected,
                           pricePerPlate: 0,
                           contingency: e.settings.contingency,
                           overrideCount: null,
-                          vegetarian: a.meals.Vegetarian || 0,
-                          nonVegetarian: a.meals["Non-vegetarian"] || 0,
-                          originalCount: a.invited,
+                          vegetarian: f.meals.Vegetarian || 0,
+                          nonVegetarian: f.meals["Non-vegetarian"] || 0,
+                          originalCount: f.invited,
                           mealType: "Buffet",
                         },
                       )
@@ -843,12 +917,8 @@ export function EventDetail({
                 <div className="stats" style={{ marginBottom: 0 }}>
                   <Stat
                     label="Expected for this meal"
-                    value={p?.expected ?? a.expected}
-                    sub={
-                      p
-                        ? "Stored organiser plan"
-                        : "Event estimate · verify for this session"
-                    }
+                    value={p?.expected ?? f.expected}
+                    sub={p ? "Stored organiser plan" : "Function RSVP estimate"}
                     icon={Users}
                   />
                   <Stat
@@ -894,30 +964,37 @@ export function EventDetail({
                       variant="ghost"
                       size="sm"
                       onClick={() =>
-                        download("evently-catering.csv", [
+                        download(
+                          `${e.title.replace(/[^a-z0-9]/gi, "-")}-catering-${new Date().toISOString().slice(0, 10)}.csv`,
                           [
-                            "Session",
-                            "Expected",
-                            "Plates",
-                            "Price per plate INR",
-                            "Cost INR",
-                            "Original budget INR",
-                            "Illustrative difference INR",
-                            "Vegetarian",
-                            "Non-vegetarian",
+                            [
+                              "Event",
+                              "Exported at",
+                              "Session",
+                              "Expected",
+                              "Plates",
+                              "Price per plate INR",
+                              "Cost INR",
+                              "Original budget INR",
+                              "Illustrative difference INR",
+                              "Vegetarian",
+                              "Non-vegetarian",
+                            ],
+                            [
+                              e.title,
+                              new Date().toISOString(),
+                              s.title,
+                              p.expected,
+                              count,
+                              p.pricePerPlate,
+                              count * p.pricePerPlate,
+                              p.originalCount * p.pricePerPlate,
+                              (p.originalCount - count) * p.pricePerPlate,
+                              p.vegetarian,
+                              p.nonVegetarian,
+                            ],
                           ],
-                          [
-                            s.title,
-                            p.expected,
-                            count,
-                            p.pricePerPlate,
-                            count * p.pricePerPlate,
-                            p.originalCount * p.pricePerPlate,
-                            (p.originalCount - count) * p.pricePerPlate,
-                            p.vegetarian,
-                            p.nonVegetarian,
-                          ],
-                        ])
+                        )
                       }
                     >
                       <Download size={13} />
@@ -933,6 +1010,22 @@ export function EventDetail({
       {tab === "Settings" && (
         <div className="panel">
           <h2>Keep your celebration in your hands.</h2>
+          <label className="check">
+            <input
+              type="checkbox"
+              checked={e.settings.publicLinksEnabled}
+              disabled={busy}
+              onChange={(ev) =>
+                saveSettings({ publicLinksEnabled: ev.target.checked })
+              }
+            />
+            Allow public invitation link
+          </label>
+          <p className="muted">
+            Disable the public link to accept responses through individually
+            assigned invitation links only. Existing private response links
+            remain usable until revoked or responses close.
+          </p>
           <label className="check">
             <input
               type="checkbox"
@@ -985,6 +1078,7 @@ export function EventDetail({
           </p>
           <Button
             variant="destructive"
+            disabled={e.accessRole !== "OWNER"}
             onClick={() => setRemove({ event: true })}
           >
             Delete event
@@ -1004,7 +1098,12 @@ export function EventDetail({
                 await api(
                   `events/${id}/guests${guest.id ? `/${guest.id}` : ""}`,
                   guest.id ? "PATCH" : "POST",
-                  guest,
+                  {
+                    ...guest,
+                    members: (guest.members || [])
+                      .map((name: string) => name.trim())
+                      .filter(Boolean),
+                  },
                 );
                 setGuest(null);
                 toast.success("Guest saved");
@@ -1047,6 +1146,66 @@ export function EventDetail({
                   }
                 />
               </Field>
+            ))}
+            <Field label="Guest category">
+              <input
+                list="guest-categories"
+                maxLength={60}
+                value={guest.category || "Other"}
+                onChange={(v) =>
+                  setGuest({ ...guest, category: v.target.value })
+                }
+              />
+              <datalist id="guest-categories">
+                {[
+                  "Family",
+                  "Relatives",
+                  "Friends",
+                  "Colleagues",
+                  "Neighbours",
+                  "VIP",
+                  "Other",
+                  ...e.invitations.map((g: Data) => g.category),
+                ]
+                  .filter((v, i, all) => all.indexOf(v) === i)
+                  .map((v) => (
+                    <option key={v} value={v} />
+                  ))}
+              </datalist>
+            </Field>
+            <Field
+              label="Household member names"
+              hint="One name per line. The primary contact is included in the invited party size."
+            >
+              <textarea
+                value={(guest.members || []).join("\n")}
+                onChange={(v) =>
+                  setGuest({ ...guest, members: v.target.value.split("\n") })
+                }
+              />
+            </Field>
+            <h3>Invited functions</h3>
+            <p className="muted">
+              No selection means all functions, including future additions.
+            </p>
+            {e.sessions.map((s: Data) => (
+              <label key={s.id} className="check">
+                <input
+                  type="checkbox"
+                  checked={(guest.invitedSessionIds || []).includes(s.id)}
+                  onChange={(v) =>
+                    setGuest({
+                      ...guest,
+                      invitedSessionIds: v.target.checked
+                        ? [...(guest.invitedSessionIds || []), s.id]
+                        : guest.invitedSessionIds.filter(
+                            (id: string) => id !== s.id,
+                          ),
+                    })
+                  }
+                />
+                {s.title}
+              </label>
             ))}
             <p className="notice">
               A household invitation represents the total number of people
@@ -1173,6 +1332,18 @@ export function EventDetail({
               Verify expected attendance for this session. Guests attending
               lunch and dinner are counted once within each meal plan.
             </p>
+            <Field
+              label="Approved partner planning notes"
+              hint="Visible to explicitly assigned catering partners. Do not include guest contact details or private response messages."
+            >
+              <textarea
+                maxLength={2000}
+                value={plan.planningNotes || ""}
+                onChange={(v) =>
+                  setPlan({ ...plan, planningNotes: v.target.value })
+                }
+              />
+            </Field>
             <Button disabled={busy}>Save meal plan</Button>
           </form>
         </Modal>
